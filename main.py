@@ -140,8 +140,6 @@ def main():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 main()
-        if event.type == pygame.QUIT:
-            running = False
 
     def you_win():
         game_over_text = game_over_font.render("YOU SAVED THE WORLD!", True, (255, 255, 255))
@@ -151,11 +149,8 @@ def main():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 main()
-        if event.type == pygame.QUIT:
-            running = False
 
     # Game Loop
-
     while running:
         # Uses RGB to create the background colour of the game
         screen.fill((52, 1, 59))
