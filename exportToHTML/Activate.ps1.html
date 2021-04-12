@@ -1,0 +1,423 @@
+<html>
+<head>
+<title>Activate.ps1</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #5c6370; font-style: italic;}
+.s1 { color: #bbbbbb;}
+.s2 { color: #d55fde; font-style: italic;}
+.s3 { color: #61afef;}
+.s4 { color: #bbbbbb;}
+.s5 { color: #d19a66;}
+.s6 { color: #89ca78;}
+.s7 { color: #89ca78; font-style: italic;}
+.ln { color: #495162; font-weight: normal; font-style: normal; }
+</style>
+</head>
+<body bgcolor="#282c34">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Activate.ps1</font>
+</center></td></tr></table>
+<pre><a name="l1"><span class="ln">1    </span></a><span class="s0">&lt;#</span>
+<a name="l2"><span class="ln">2    </span></a><span class="s0">.Synopsis</span>
+<a name="l3"><span class="ln">3    </span></a><span class="s0">Activate a Python virtual environment for the current PowerShell session. 
+<a name="l4"><span class="ln">4    </span></a></span>
+<a name="l5"><span class="ln">5    </span></a><span class="s0">.Description</span>
+<a name="l6"><span class="ln">6    </span></a><span class="s0">Pushes the python executable for a virtual environment to the front of the 
+<a name="l7"><span class="ln">7    </span></a>$Env:PATH environment variable and sets the prompt to signify that you are 
+<a name="l8"><span class="ln">8    </span></a>in a Python virtual environment. Makes use of the command line switches as 
+<a name="l9"><span class="ln">9    </span></a>well as the `pyvenv.cfg` file values present in the virtual environment. 
+<a name="l10"><span class="ln">10   </span></a></span>
+<a name="l11"><span class="ln">11   </span></a><span class="s0">.Parameter VenvDir</span>
+<a name="l12"><span class="ln">12   </span></a><span class="s0">Path to the directory that contains the virtual environment to activate. The 
+<a name="l13"><span class="ln">13   </span></a>default value for this is the parent of the directory that the Activate.ps1 
+<a name="l14"><span class="ln">14   </span></a>script is located within. 
+<a name="l15"><span class="ln">15   </span></a></span>
+<a name="l16"><span class="ln">16   </span></a><span class="s0">.Parameter Prompt</span>
+<a name="l17"><span class="ln">17   </span></a><span class="s0">The prompt prefix to display when this virtual environment is activated. By 
+<a name="l18"><span class="ln">18   </span></a>default, this prompt is the name of the virtual environment folder (VenvDir) 
+<a name="l19"><span class="ln">19   </span></a>surrounded by parentheses and followed by a single space (ie. '(.venv) '). 
+<a name="l20"><span class="ln">20   </span></a></span>
+<a name="l21"><span class="ln">21   </span></a><span class="s0">.Example</span>
+<a name="l22"><span class="ln">22   </span></a><span class="s0">Activate.ps1 
+<a name="l23"><span class="ln">23   </span></a>Activates the Python virtual environment that contains the Activate.ps1 script. 
+<a name="l24"><span class="ln">24   </span></a></span>
+<a name="l25"><span class="ln">25   </span></a><span class="s0">.Example</span>
+<a name="l26"><span class="ln">26   </span></a><span class="s0">Activate.ps1 -Verbose 
+<a name="l27"><span class="ln">27   </span></a>Activates the Python virtual environment that contains the Activate.ps1 script, 
+<a name="l28"><span class="ln">28   </span></a>and shows extra information about the activation as it executes. 
+<a name="l29"><span class="ln">29   </span></a></span>
+<a name="l30"><span class="ln">30   </span></a><span class="s0">.Example</span>
+<a name="l31"><span class="ln">31   </span></a><span class="s0">Activate.ps1 -VenvDir C:\Users\MyUser\Common\.venv 
+<a name="l32"><span class="ln">32   </span></a>Activates the Python virtual environment located in the specified location. 
+<a name="l33"><span class="ln">33   </span></a></span>
+<a name="l34"><span class="ln">34   </span></a><span class="s0">.Example</span>
+<a name="l35"><span class="ln">35   </span></a><span class="s0">Activate.ps1 -Prompt &quot;MyPython&quot; 
+<a name="l36"><span class="ln">36   </span></a>Activates the Python virtual environment that contains the Activate.ps1 script, 
+<a name="l37"><span class="ln">37   </span></a>and prefixes the current prompt with the specified string (surrounded in 
+<a name="l38"><span class="ln">38   </span></a>parentheses) while the virtual environment is active. 
+<a name="l39"><span class="ln">39   </span></a></span>
+<a name="l40"><span class="ln">40   </span></a><span class="s0">.Notes</span>
+<a name="l41"><span class="ln">41   </span></a><span class="s0">On Windows, it may be required to enable this Activate.ps1 script by setting the 
+<a name="l42"><span class="ln">42   </span></a>execution policy for the user. You can do this by issuing the following PowerShell 
+<a name="l43"><span class="ln">43   </span></a>command: 
+<a name="l44"><span class="ln">44   </span></a></span>
+<a name="l45"><span class="ln">45   </span></a><span class="s0">PS C:\&gt; Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser 
+<a name="l46"><span class="ln">46   </span></a></span>
+<a name="l47"><span class="ln">47   </span></a><span class="s0">For more information on Execution Policies:  
+<a name="l48"><span class="ln">48   </span></a>https://go.microsoft.com/fwlink/?LinkID=135170 
+<a name="l49"><span class="ln">49   </span></a></span>
+<a name="l50"><span class="ln">50   </span></a><span class="s0">#&gt;</span>
+<a name="l51"><span class="ln">51   </span></a><span class="s2">Param</span><span class="s1">(</span>
+<a name="l52"><span class="ln">52   </span></a>    <span class="s1">[</span><span class="s3">Parameter</span><span class="s1">(</span><span class="s4">Mandatory </span><span class="s2">= </span><span class="s5">$false</span><span class="s1">)]</span>
+<a name="l53"><span class="ln">53   </span></a>    <span class="s1">[</span><span class="s2">String</span><span class="s1">]</span>
+<a name="l54"><span class="ln">54   </span></a>    <span class="s4">$VenvDir</span><span class="s2">,</span>
+<a name="l55"><span class="ln">55   </span></a>    <span class="s1">[</span><span class="s3">Parameter</span><span class="s1">(</span><span class="s4">Mandatory </span><span class="s2">= </span><span class="s5">$false</span><span class="s1">)]</span>
+<a name="l56"><span class="ln">56   </span></a>    <span class="s1">[</span><span class="s2">String</span><span class="s1">]</span>
+<a name="l57"><span class="ln">57   </span></a>    <span class="s4">$Prompt</span>
+<a name="l58"><span class="ln">58   </span></a><span class="s1">)</span>
+<a name="l59"><span class="ln">59   </span></a>
+<a name="l60"><span class="ln">60   </span></a><span class="s0">&lt;# Function declarations --------------------------------------------------- #&gt;</span>
+<a name="l61"><span class="ln">61   </span></a>
+<a name="l62"><span class="ln">62   </span></a><span class="s0">&lt;#</span>
+<a name="l63"><span class="ln">63   </span></a><span class="s0">.Synopsis</span>
+<a name="l64"><span class="ln">64   </span></a><span class="s0">Remove all shell session elements added by the Activate script, including the 
+<a name="l65"><span class="ln">65   </span></a>addition of the virtual environment's Python executable from the beginning of 
+<a name="l66"><span class="ln">66   </span></a>the PATH variable. 
+<a name="l67"><span class="ln">67   </span></a></span>
+<a name="l68"><span class="ln">68   </span></a><span class="s0">.Parameter NonDestructive</span>
+<a name="l69"><span class="ln">69   </span></a><span class="s0">If present, do not remove this function from the global namespace for the 
+<a name="l70"><span class="ln">70   </span></a>session. 
+<a name="l71"><span class="ln">71   </span></a></span>
+<a name="l72"><span class="ln">72   </span></a><span class="s0">#&gt;</span>
+<a name="l73"><span class="ln">73   </span></a><span class="s2">function global</span><span class="s1">:</span><span class="s4">deactivate </span><span class="s1">([</span><span class="s2">switch</span><span class="s1">]</span><span class="s4">$NonDestructive</span><span class="s1">) {</span>
+<a name="l74"><span class="ln">74   </span></a>    <span class="s0"># Revert to original values</span>
+<a name="l75"><span class="ln">75   </span></a>
+<a name="l76"><span class="ln">76   </span></a>    <span class="s0"># The prior prompt:</span>
+<a name="l77"><span class="ln">77   </span></a>    <span class="s2">if </span><span class="s1">(</span><span class="s3">Test-Path </span><span class="s2">-</span><span class="s1">Path Function:_OLD_VIRTUAL_PROMPT) {</span>
+<a name="l78"><span class="ln">78   </span></a>        <span class="s3">Copy-Item </span><span class="s2">-</span><span class="s1">Path Function:_OLD_VIRTUAL_PROMPT </span><span class="s2">-</span><span class="s1">Destination Function:prompt 
+<a name="l79"><span class="ln">79   </span></a>        </span><span class="s3">Remove-Item </span><span class="s2">-</span><span class="s1">Path Function:_OLD_VIRTUAL_PROMPT 
+<a name="l80"><span class="ln">80   </span></a>    }</span>
+<a name="l81"><span class="ln">81   </span></a>
+<a name="l82"><span class="ln">82   </span></a>    <span class="s0"># The prior PYTHONHOME:</span>
+<a name="l83"><span class="ln">83   </span></a>    <span class="s2">if </span><span class="s1">(</span><span class="s3">Test-Path </span><span class="s2">-</span><span class="s1">Path Env:_OLD_VIRTUAL_PYTHONHOME) {</span>
+<a name="l84"><span class="ln">84   </span></a>        <span class="s3">Copy-Item </span><span class="s2">-</span><span class="s1">Path Env:_OLD_VIRTUAL_PYTHONHOME </span><span class="s2">-</span><span class="s1">Destination Env:PYTHONHOME 
+<a name="l85"><span class="ln">85   </span></a>        </span><span class="s3">Remove-Item </span><span class="s2">-</span><span class="s1">Path Env:_OLD_VIRTUAL_PYTHONHOME 
+<a name="l86"><span class="ln">86   </span></a>    }</span>
+<a name="l87"><span class="ln">87   </span></a>
+<a name="l88"><span class="ln">88   </span></a>    <span class="s0"># The prior PATH:</span>
+<a name="l89"><span class="ln">89   </span></a>    <span class="s2">if </span><span class="s1">(</span><span class="s3">Test-Path </span><span class="s2">-</span><span class="s1">Path Env:_OLD_VIRTUAL_PATH) {</span>
+<a name="l90"><span class="ln">90   </span></a>        <span class="s3">Copy-Item </span><span class="s2">-</span><span class="s1">Path Env:_OLD_VIRTUAL_PATH </span><span class="s2">-</span><span class="s1">Destination Env:PATH 
+<a name="l91"><span class="ln">91   </span></a>        </span><span class="s3">Remove-Item </span><span class="s2">-</span><span class="s1">Path Env:_OLD_VIRTUAL_PATH 
+<a name="l92"><span class="ln">92   </span></a>    }</span>
+<a name="l93"><span class="ln">93   </span></a>
+<a name="l94"><span class="ln">94   </span></a>    <span class="s0"># Just remove the VIRTUAL_ENV altogether:</span>
+<a name="l95"><span class="ln">95   </span></a>    <span class="s2">if </span><span class="s1">(</span><span class="s3">Test-Path </span><span class="s2">-</span><span class="s1">Path Env:VIRTUAL_ENV) {</span>
+<a name="l96"><span class="ln">96   </span></a>        <span class="s3">Remove-Item </span><span class="s2">-</span><span class="s1">Path env:VIRTUAL_ENV 
+<a name="l97"><span class="ln">97   </span></a>    }</span>
+<a name="l98"><span class="ln">98   </span></a>
+<a name="l99"><span class="ln">99   </span></a>    <span class="s0"># Just remove the _PYTHON_VENV_PROMPT_PREFIX altogether:</span>
+<a name="l100"><span class="ln">100  </span></a>    <span class="s2">if </span><span class="s1">(</span><span class="s3">Get-Variable </span><span class="s2">-</span><span class="s1">Name </span><span class="s6">&quot;_PYTHON_VENV_PROMPT_PREFIX&quot; </span><span class="s2">-</span><span class="s1">ErrorAction SilentlyContinue) {</span>
+<a name="l101"><span class="ln">101  </span></a>        <span class="s3">Remove-Variable </span><span class="s2">-</span><span class="s1">Name _PYTHON_VENV_PROMPT_PREFIX </span><span class="s2">-</span><span class="s1">Scope Global </span><span class="s2">-</span><span class="s1">Force 
+<a name="l102"><span class="ln">102  </span></a>    }</span>
+<a name="l103"><span class="ln">103  </span></a>
+<a name="l104"><span class="ln">104  </span></a>    <span class="s0"># Leave deactivate function in the global namespace if requested:</span>
+<a name="l105"><span class="ln">105  </span></a>    <span class="s2">if </span><span class="s1">(</span><span class="s2">-not </span><span class="s4">$NonDestructive</span><span class="s1">) {</span>
+<a name="l106"><span class="ln">106  </span></a>        <span class="s3">Remove-Item </span><span class="s2">-</span><span class="s1">Path function:deactivate 
+<a name="l107"><span class="ln">107  </span></a>    }</span>
+<a name="l108"><span class="ln">108  </span></a><span class="s1">}</span>
+<a name="l109"><span class="ln">109  </span></a>
+<a name="l110"><span class="ln">110  </span></a><span class="s0">&lt;#</span>
+<a name="l111"><span class="ln">111  </span></a><span class="s0">.Description</span>
+<a name="l112"><span class="ln">112  </span></a><span class="s0">Get-PyVenvConfig parses the values from the pyvenv.cfg file located in the 
+<a name="l113"><span class="ln">113  </span></a>given folder, and returns them in a map. 
+<a name="l114"><span class="ln">114  </span></a></span>
+<a name="l115"><span class="ln">115  </span></a><span class="s0">For each line in the pyvenv.cfg file, if that line can be parsed into exactly 
+<a name="l116"><span class="ln">116  </span></a>two strings separated by `=` (with any amount of whitespace surrounding the =) 
+<a name="l117"><span class="ln">117  </span></a>then it is considered a `key = value` line. The left hand string is the key, 
+<a name="l118"><span class="ln">118  </span></a>the right hand is the value. 
+<a name="l119"><span class="ln">119  </span></a></span>
+<a name="l120"><span class="ln">120  </span></a><span class="s0">If the value starts with a `'` or a `&quot;` then the first and last character is 
+<a name="l121"><span class="ln">121  </span></a>stripped from the value before being captured. 
+<a name="l122"><span class="ln">122  </span></a></span>
+<a name="l123"><span class="ln">123  </span></a><span class="s0">.Parameter ConfigDir</span>
+<a name="l124"><span class="ln">124  </span></a><span class="s0">Path to the directory that contains the `pyvenv.cfg` file. 
+<a name="l125"><span class="ln">125  </span></a>#&gt;</span>
+<a name="l126"><span class="ln">126  </span></a><span class="s2">function </span><span class="s4">Get-PyVenvConfig</span><span class="s1">(</span>
+<a name="l127"><span class="ln">127  </span></a>    <span class="s1">[</span><span class="s2">String</span><span class="s1">]</span>
+<a name="l128"><span class="ln">128  </span></a>    <span class="s4">$ConfigDir</span>
+<a name="l129"><span class="ln">129  </span></a><span class="s1">) {</span>
+<a name="l130"><span class="ln">130  </span></a>    <span class="s3">Write-Verbose </span><span class="s6">&quot;Given ConfigDir=$ConfigDir, obtain values in pyvenv.cfg&quot;</span>
+<a name="l131"><span class="ln">131  </span></a>
+<a name="l132"><span class="ln">132  </span></a>    <span class="s0"># Ensure the file exists, and issue a warning if it doesn't (but still allow the function to continue).</span>
+<a name="l133"><span class="ln">133  </span></a>    <span class="s4">$pyvenvConfigPath </span><span class="s2">= </span><span class="s3">Join-Path </span><span class="s2">-</span><span class="s1">Resolve </span><span class="s2">-</span><span class="s1">Path </span><span class="s4">$ConfigDir </span><span class="s2">-</span><span class="s1">ChildPath </span><span class="s6">'pyvenv.cfg' </span><span class="s2">-</span><span class="s1">ErrorAction </span><span class="s2">Continue</span>
+<a name="l134"><span class="ln">134  </span></a>
+<a name="l135"><span class="ln">135  </span></a>    <span class="s0"># An empty map will be returned if no config file is found.</span>
+<a name="l136"><span class="ln">136  </span></a>    <span class="s4">$pyvenvConfig </span><span class="s2">= @</span><span class="s1">{ }</span>
+<a name="l137"><span class="ln">137  </span></a>
+<a name="l138"><span class="ln">138  </span></a>    <span class="s2">if </span><span class="s1">(</span><span class="s4">$pyvenvConfigPath</span><span class="s1">) {</span>
+<a name="l139"><span class="ln">139  </span></a>
+<a name="l140"><span class="ln">140  </span></a>        <span class="s3">Write-Verbose </span><span class="s6">&quot;File exists, parse `key = value` lines&quot;</span>
+<a name="l141"><span class="ln">141  </span></a>        <span class="s4">$pyvenvConfigContent </span><span class="s2">= </span><span class="s3">Get-Content </span><span class="s2">-</span><span class="s1">Path </span><span class="s4">$pyvenvConfigPath</span>
+<a name="l142"><span class="ln">142  </span></a>
+<a name="l143"><span class="ln">143  </span></a>        <span class="s4">$pyvenvConfigContent </span><span class="s2">| </span><span class="s3">ForEach-Object </span><span class="s1">{</span>
+<a name="l144"><span class="ln">144  </span></a>            <span class="s4">$keyval </span><span class="s2">= </span><span class="s1">$PSItem </span><span class="s2">-split </span><span class="s6">&quot;\s*=\s*&quot;</span><span class="s2">, </span><span class="s5">2</span>
+<a name="l145"><span class="ln">145  </span></a>            <span class="s2">if </span><span class="s1">(</span><span class="s4">$keyval</span><span class="s1">[</span><span class="s5">0</span><span class="s1">] </span><span class="s2">-and </span><span class="s4">$keyval</span><span class="s1">[</span><span class="s5">1</span><span class="s1">]) {</span>
+<a name="l146"><span class="ln">146  </span></a>                <span class="s4">$val </span><span class="s2">= </span><span class="s4">$keyval</span><span class="s1">[</span><span class="s5">1</span><span class="s1">]</span>
+<a name="l147"><span class="ln">147  </span></a>
+<a name="l148"><span class="ln">148  </span></a>                <span class="s0"># Remove extraneous quotations around a string value.</span>
+<a name="l149"><span class="ln">149  </span></a>                <span class="s2">if </span><span class="s1">(</span><span class="s6">&quot;'&quot;&quot;&quot;</span><span class="s1">.Contains(</span><span class="s4">$val.Substring</span><span class="s1">(</span><span class="s5">0</span><span class="s2">, </span><span class="s5">1</span><span class="s1">))) {</span>
+<a name="l150"><span class="ln">150  </span></a>                    <span class="s4">$val </span><span class="s2">= </span><span class="s4">$val.Substring</span><span class="s1">(</span><span class="s5">1</span><span class="s2">, </span><span class="s4">$val.Length </span><span class="s2">- </span><span class="s5">2</span><span class="s1">)</span>
+<a name="l151"><span class="ln">151  </span></a>                <span class="s1">}</span>
+<a name="l152"><span class="ln">152  </span></a>
+<a name="l153"><span class="ln">153  </span></a>                <span class="s4">$pyvenvConfig</span><span class="s1">[</span><span class="s4">$keyval</span><span class="s1">[</span><span class="s5">0</span><span class="s1">]] </span><span class="s2">= </span><span class="s4">$val</span>
+<a name="l154"><span class="ln">154  </span></a>                <span class="s3">Write-Verbose </span><span class="s6">&quot;Adding Key: '$($keyval[0])'='$val'&quot;</span>
+<a name="l155"><span class="ln">155  </span></a>            <span class="s1">}</span>
+<a name="l156"><span class="ln">156  </span></a>        <span class="s1">}</span>
+<a name="l157"><span class="ln">157  </span></a>    <span class="s1">}</span>
+<a name="l158"><span class="ln">158  </span></a>    <span class="s2">return </span><span class="s4">$pyvenvConfig</span>
+<a name="l159"><span class="ln">159  </span></a><span class="s1">}</span>
+<a name="l160"><span class="ln">160  </span></a>
+<a name="l161"><span class="ln">161  </span></a>
+<a name="l162"><span class="ln">162  </span></a><span class="s0">&lt;# Begin Activate script --------------------------------------------------- #&gt;</span>
+<a name="l163"><span class="ln">163  </span></a>
+<a name="l164"><span class="ln">164  </span></a><span class="s0"># Determine the containing directory of this script</span>
+<a name="l165"><span class="ln">165  </span></a><span class="s4">$VenvExecPath </span><span class="s2">= </span><span class="s3">Split-Path </span><span class="s2">-</span><span class="s1">Parent $MyInvocation</span><span class="s4">.MyCommand.Definition</span>
+<a name="l166"><span class="ln">166  </span></a><span class="s4">$VenvExecDir </span><span class="s2">= </span><span class="s3">Get-Item </span><span class="s2">-</span><span class="s1">Path </span><span class="s4">$VenvExecPath</span>
+<a name="l167"><span class="ln">167  </span></a>
+<a name="l168"><span class="ln">168  </span></a><span class="s3">Write-Verbose </span><span class="s6">&quot;Activation script is located in path: '$VenvExecPath'&quot;</span>
+<a name="l169"><span class="ln">169  </span></a><span class="s3">Write-Verbose </span><span class="s6">&quot;VenvExecDir Fullname: '$($VenvExecDir.FullName)&quot;</span>
+<a name="l170"><span class="ln">170  </span></a><span class="s3">Write-Verbose </span><span class="s6">&quot;VenvExecDir Name: '$($VenvExecDir.Name)&quot;</span>
+<a name="l171"><span class="ln">171  </span></a>
+<a name="l172"><span class="ln">172  </span></a><span class="s0"># Set values required in priority: CmdLine, ConfigFile, Default</span>
+<a name="l173"><span class="ln">173  </span></a><span class="s0"># First, get the location of the virtual environment, it might not be</span>
+<a name="l174"><span class="ln">174  </span></a><span class="s0"># VenvExecDir if specified on the command line.</span>
+<a name="l175"><span class="ln">175  </span></a><span class="s2">if </span><span class="s1">(</span><span class="s4">$VenvDir</span><span class="s1">) {</span>
+<a name="l176"><span class="ln">176  </span></a>    <span class="s3">Write-Verbose </span><span class="s6">&quot;VenvDir given as parameter, using '$VenvDir' to determine values&quot;</span>
+<a name="l177"><span class="ln">177  </span></a><span class="s1">}</span>
+<a name="l178"><span class="ln">178  </span></a><span class="s2">else </span><span class="s1">{</span>
+<a name="l179"><span class="ln">179  </span></a>    <span class="s3">Write-Verbose </span><span class="s6">&quot;VenvDir not given as a parameter, using parent directory name as VenvDir.&quot;</span>
+<a name="l180"><span class="ln">180  </span></a>    <span class="s4">$VenvDir </span><span class="s2">= </span><span class="s4">$VenvExecDir.Parent.FullName.TrimEnd</span><span class="s1">(</span><span class="s6">&quot;\\/&quot;</span><span class="s1">)</span>
+<a name="l181"><span class="ln">181  </span></a>    <span class="s3">Write-Verbose </span><span class="s6">&quot;VenvDir=$VenvDir&quot;</span>
+<a name="l182"><span class="ln">182  </span></a><span class="s1">}</span>
+<a name="l183"><span class="ln">183  </span></a>
+<a name="l184"><span class="ln">184  </span></a><span class="s0"># Next, read the `pyvenv.cfg` file to determine any required value such</span>
+<a name="l185"><span class="ln">185  </span></a><span class="s0"># as `prompt`.</span>
+<a name="l186"><span class="ln">186  </span></a><span class="s4">$pyvenvCfg </span><span class="s2">= </span><span class="s3">Get-PyVenvConfig </span><span class="s2">-</span><span class="s1">ConfigDir </span><span class="s4">$VenvDir</span>
+<a name="l187"><span class="ln">187  </span></a>
+<a name="l188"><span class="ln">188  </span></a><span class="s0"># Next, set the prompt from the command line, or the config file, or</span>
+<a name="l189"><span class="ln">189  </span></a><span class="s0"># just use the name of the virtual environment folder.</span>
+<a name="l190"><span class="ln">190  </span></a><span class="s2">if </span><span class="s1">(</span><span class="s4">$Prompt</span><span class="s1">) {</span>
+<a name="l191"><span class="ln">191  </span></a>    <span class="s3">Write-Verbose </span><span class="s6">&quot;Prompt specified as argument, using '$Prompt'&quot;</span>
+<a name="l192"><span class="ln">192  </span></a><span class="s1">}</span>
+<a name="l193"><span class="ln">193  </span></a><span class="s2">else </span><span class="s1">{</span>
+<a name="l194"><span class="ln">194  </span></a>    <span class="s3">Write-Verbose </span><span class="s6">&quot;Prompt not specified as argument to script, checking pyvenv.cfg value&quot;</span>
+<a name="l195"><span class="ln">195  </span></a>    <span class="s2">if </span><span class="s1">(</span><span class="s4">$pyvenvCfg </span><span class="s2">-and </span><span class="s4">$pyvenvCfg</span><span class="s1">[</span><span class="s6">'prompt'</span><span class="s1">]) {</span>
+<a name="l196"><span class="ln">196  </span></a>        <span class="s3">Write-Verbose </span><span class="s6">&quot;  Setting based on value in pyvenv.cfg='$($pyvenvCfg['prompt'])'&quot;</span>
+<a name="l197"><span class="ln">197  </span></a>        <span class="s4">$Prompt </span><span class="s2">= </span><span class="s4">$pyvenvCfg</span><span class="s1">[</span><span class="s6">'prompt'</span><span class="s1">];</span>
+<a name="l198"><span class="ln">198  </span></a>    <span class="s1">}</span>
+<a name="l199"><span class="ln">199  </span></a>    <span class="s2">else </span><span class="s1">{</span>
+<a name="l200"><span class="ln">200  </span></a>        <span class="s3">Write-Verbose </span><span class="s6">&quot;  Setting prompt based on parent's directory's name. (Is the directory name passed to venv module when creating the virutal environment)&quot;</span>
+<a name="l201"><span class="ln">201  </span></a>        <span class="s3">Write-Verbose </span><span class="s6">&quot;  Got leaf-name of $VenvDir='$(Split-Path </span><span class="s7">-</span><span class="s6">Path $venvDir </span><span class="s7">-</span><span class="s6">Leaf)'&quot;</span>
+<a name="l202"><span class="ln">202  </span></a>        <span class="s4">$Prompt </span><span class="s2">= </span><span class="s3">Split-Path </span><span class="s2">-</span><span class="s1">Path </span><span class="s4">$venvDir </span><span class="s2">-</span><span class="s1">Leaf 
+<a name="l203"><span class="ln">203  </span></a>    }</span>
+<a name="l204"><span class="ln">204  </span></a><span class="s1">}</span>
+<a name="l205"><span class="ln">205  </span></a>
+<a name="l206"><span class="ln">206  </span></a><span class="s3">Write-Verbose </span><span class="s6">&quot;Prompt = '$Prompt'&quot;</span>
+<a name="l207"><span class="ln">207  </span></a><span class="s3">Write-Verbose </span><span class="s6">&quot;VenvDir='$VenvDir'&quot;</span>
+<a name="l208"><span class="ln">208  </span></a>
+<a name="l209"><span class="ln">209  </span></a><span class="s0"># Deactivate any currently active virtual environment, but leave the</span>
+<a name="l210"><span class="ln">210  </span></a><span class="s0"># deactivate function in place.</span>
+<a name="l211"><span class="ln">211  </span></a><span class="s1">deactivate </span><span class="s2">-</span><span class="s1">nondestructive 
+<a name="l212"><span class="ln">212  </span></a></span>
+<a name="l213"><span class="ln">213  </span></a><span class="s0"># Now set the environment variable VIRTUAL_ENV, used by many tools to determine</span>
+<a name="l214"><span class="ln">214  </span></a><span class="s0"># that there is an activated venv.</span>
+<a name="l215"><span class="ln">215  </span></a><span class="s4">$env:VIRTUAL_ENV </span><span class="s2">= </span><span class="s4">$VenvDir</span>
+<a name="l216"><span class="ln">216  </span></a>
+<a name="l217"><span class="ln">217  </span></a><span class="s2">if </span><span class="s1">(</span><span class="s2">-not </span><span class="s4">$Env:VIRTUAL_ENV_DISABLE_PROMPT</span><span class="s1">) {</span>
+<a name="l218"><span class="ln">218  </span></a>
+<a name="l219"><span class="ln">219  </span></a>    <span class="s3">Write-Verbose </span><span class="s6">&quot;Setting prompt to '$Prompt'&quot;</span>
+<a name="l220"><span class="ln">220  </span></a>
+<a name="l221"><span class="ln">221  </span></a>    <span class="s0"># Set the prompt to include the env name</span>
+<a name="l222"><span class="ln">222  </span></a>    <span class="s0"># Make sure _OLD_VIRTUAL_PROMPT is global</span>
+<a name="l223"><span class="ln">223  </span></a>    <span class="s2">function global</span><span class="s1">:</span><span class="s4">_OLD_VIRTUAL_PROMPT </span><span class="s1">{ </span><span class="s6">&quot;&quot; </span><span class="s1">}</span>
+<a name="l224"><span class="ln">224  </span></a>    <span class="s3">Copy-Item </span><span class="s2">-</span><span class="s1">Path function:prompt </span><span class="s2">-</span><span class="s1">Destination function:_OLD_VIRTUAL_PROMPT 
+<a name="l225"><span class="ln">225  </span></a>    </span><span class="s3">New-Variable </span><span class="s2">-</span><span class="s1">Name _PYTHON_VENV_PROMPT_PREFIX </span><span class="s2">-</span><span class="s1">Description </span><span class="s6">&quot;Python virtual environment prompt prefix&quot; </span><span class="s2">-</span><span class="s1">Scope Global </span><span class="s2">-</span><span class="s1">Option ReadOnly </span><span class="s2">-</span><span class="s1">Visibility Public </span><span class="s2">-</span><span class="s1">Value </span><span class="s4">$Prompt</span>
+<a name="l226"><span class="ln">226  </span></a>
+<a name="l227"><span class="ln">227  </span></a>    <span class="s2">function global</span><span class="s1">:</span><span class="s4">prompt </span><span class="s1">{</span>
+<a name="l228"><span class="ln">228  </span></a>        <span class="s3">Write-Host </span><span class="s2">-</span><span class="s1">NoNewline </span><span class="s2">-</span><span class="s1">ForegroundColor Green </span><span class="s6">&quot;($_PYTHON_VENV_PROMPT_PREFIX) &quot;</span>
+<a name="l229"><span class="ln">229  </span></a>        <span class="s1">_OLD_VIRTUAL_PROMPT 
+<a name="l230"><span class="ln">230  </span></a>    }</span>
+<a name="l231"><span class="ln">231  </span></a><span class="s1">}</span>
+<a name="l232"><span class="ln">232  </span></a>
+<a name="l233"><span class="ln">233  </span></a><span class="s0"># Clear PYTHONHOME</span>
+<a name="l234"><span class="ln">234  </span></a><span class="s2">if </span><span class="s1">(</span><span class="s3">Test-Path </span><span class="s2">-</span><span class="s1">Path Env:PYTHONHOME) {</span>
+<a name="l235"><span class="ln">235  </span></a>    <span class="s3">Copy-Item </span><span class="s2">-</span><span class="s1">Path Env:PYTHONHOME </span><span class="s2">-</span><span class="s1">Destination Env:_OLD_VIRTUAL_PYTHONHOME 
+<a name="l236"><span class="ln">236  </span></a>    </span><span class="s3">Remove-Item </span><span class="s2">-</span><span class="s1">Path Env:PYTHONHOME 
+<a name="l237"><span class="ln">237  </span></a>}</span>
+<a name="l238"><span class="ln">238  </span></a>
+<a name="l239"><span class="ln">239  </span></a><span class="s0"># Add the venv to the PATH</span>
+<a name="l240"><span class="ln">240  </span></a><span class="s3">Copy-Item </span><span class="s2">-</span><span class="s1">Path Env:PATH </span><span class="s2">-</span><span class="s1">Destination Env:_OLD_VIRTUAL_PATH 
+<a name="l241"><span class="ln">241  </span></a></span><span class="s4">$Env:PATH </span><span class="s2">= </span><span class="s6">&quot;$VenvExecDir$([</span><span class="s7">System.IO.Path</span><span class="s6">]::PathSeparator)$Env:PATH&quot;</span>
+<a name="l242"><span class="ln">242  </span></a>
+<a name="l243"><span class="ln">243  </span></a><span class="s0"># SIG # Begin signature block</span>
+<a name="l244"><span class="ln">244  </span></a><span class="s0"># MIIcvgYJKoZIhvcNAQcCoIIcrzCCHKsCAQExDzANBglghkgBZQMEAgEFADB5Bgor</span>
+<a name="l245"><span class="ln">245  </span></a><span class="s0"># BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG</span>
+<a name="l246"><span class="ln">246  </span></a><span class="s0"># KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAwnDYwEHaCQq0n</span>
+<a name="l247"><span class="ln">247  </span></a><span class="s0"># 8NAvsN7H7BO7/48rXCNwrg891FS5vaCCC38wggUwMIIEGKADAgECAhAECRgbX9W7</span>
+<a name="l248"><span class="ln">248  </span></a><span class="s0"># ZnVTQ7VvlVAIMA0GCSqGSIb3DQEBCwUAMGUxCzAJBgNVBAYTAlVTMRUwEwYDVQQK</span>
+<a name="l249"><span class="ln">249  </span></a><span class="s0"># EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xJDAiBgNV</span>
+<a name="l250"><span class="ln">250  </span></a><span class="s0"># BAMTG0RpZ2lDZXJ0IEFzc3VyZWQgSUQgUm9vdCBDQTAeFw0xMzEwMjIxMjAwMDBa</span>
+<a name="l251"><span class="ln">251  </span></a><span class="s0"># Fw0yODEwMjIxMjAwMDBaMHIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdpQ2Vy</span>
+<a name="l252"><span class="ln">252  </span></a><span class="s0"># dCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xMTAvBgNVBAMTKERpZ2lD</span>
+<a name="l253"><span class="ln">253  </span></a><span class="s0"># ZXJ0IFNIQTIgQXNzdXJlZCBJRCBDb2RlIFNpZ25pbmcgQ0EwggEiMA0GCSqGSIb3</span>
+<a name="l254"><span class="ln">254  </span></a><span class="s0"># DQEBAQUAA4IBDwAwggEKAoIBAQD407Mcfw4Rr2d3B9MLMUkZz9D7RZmxOttE9X/l</span>
+<a name="l255"><span class="ln">255  </span></a><span class="s0"># qJ3bMtdx6nadBS63j/qSQ8Cl+YnUNxnXtqrwnIal2CWsDnkoOn7p0WfTxvspJ8fT</span>
+<a name="l256"><span class="ln">256  </span></a><span class="s0"># eyOU5JEjlpB3gvmhhCNmElQzUHSxKCa7JGnCwlLyFGeKiUXULaGj6YgsIJWuHEqH</span>
+<a name="l257"><span class="ln">257  </span></a><span class="s0"># CN8M9eJNYBi+qsSyrnAxZjNxPqxwoqvOf+l8y5Kh5TsxHM/q8grkV7tKtel05iv+</span>
+<a name="l258"><span class="ln">258  </span></a><span class="s0"># bMt+dDk2DZDv5LVOpKnqagqrhPOsZ061xPeM0SAlI+sIZD5SlsHyDxL0xY4PwaLo</span>
+<a name="l259"><span class="ln">259  </span></a><span class="s0"># LFH3c7y9hbFig3NBggfkOItqcyDQD2RzPJ6fpjOp/RnfJZPRAgMBAAGjggHNMIIB</span>
+<a name="l260"><span class="ln">260  </span></a><span class="s0"># yTASBgNVHRMBAf8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBhjATBgNVHSUEDDAK</span>
+<a name="l261"><span class="ln">261  </span></a><span class="s0"># BggrBgEFBQcDAzB5BggrBgEFBQcBAQRtMGswJAYIKwYBBQUHMAGGGGh0dHA6Ly9v</span>
+<a name="l262"><span class="ln">262  </span></a><span class="s0"># Y3NwLmRpZ2ljZXJ0LmNvbTBDBggrBgEFBQcwAoY3aHR0cDovL2NhY2VydHMuZGln</span>
+<a name="l263"><span class="ln">263  </span></a><span class="s0"># aWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9vdENBLmNydDCBgQYDVR0fBHow</span>
+<a name="l264"><span class="ln">264  </span></a><span class="s0"># eDA6oDigNoY0aHR0cDovL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJl</span>
+<a name="l265"><span class="ln">265  </span></a><span class="s0"># ZElEUm9vdENBLmNybDA6oDigNoY0aHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0Rp</span>
+<a name="l266"><span class="ln">266  </span></a><span class="s0"># Z2lDZXJ0QXNzdXJlZElEUm9vdENBLmNybDBPBgNVHSAESDBGMDgGCmCGSAGG/WwA</span>
+<a name="l267"><span class="ln">267  </span></a><span class="s0"># AgQwKjAoBggrBgEFBQcCARYcaHR0cHM6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAK</span>
+<a name="l268"><span class="ln">268  </span></a><span class="s0"># BghghkgBhv1sAzAdBgNVHQ4EFgQUWsS5eyoKo6XqcQPAYPkt9mV1DlgwHwYDVR0j</span>
+<a name="l269"><span class="ln">269  </span></a><span class="s0"># BBgwFoAUReuir/SSy4IxLVGLp6chnfNtyA8wDQYJKoZIhvcNAQELBQADggEBAD7s</span>
+<a name="l270"><span class="ln">270  </span></a><span class="s0"># DVoks/Mi0RXILHwlKXaoHV0cLToaxO8wYdd+C2D9wz0PxK+L/e8q3yBVN7Dh9tGS</span>
+<a name="l271"><span class="ln">271  </span></a><span class="s0"># dQ9RtG6ljlriXiSBThCk7j9xjmMOE0ut119EefM2FAaK95xGTlz/kLEbBw6RFfu6</span>
+<a name="l272"><span class="ln">272  </span></a><span class="s0"># r7VRwo0kriTGxycqoSkoGjpxKAI8LpGjwCUR4pwUR6F6aGivm6dcIFzZcbEMj7uo</span>
+<a name="l273"><span class="ln">273  </span></a><span class="s0"># +MUSaJ/PQMtARKUT8OZkDCUIQjKyNookAv4vcn4c10lFluhZHen6dGRrsutmQ9qz</span>
+<a name="l274"><span class="ln">274  </span></a><span class="s0"># sIzV6Q3d9gEgzpkxYz0IGhizgZtPxpMQBvwHgfqL2vmCSfdibqFT+hKUGIUukpHq</span>
+<a name="l275"><span class="ln">275  </span></a><span class="s0"># aGxEMrJmoecYpJpkUe8wggZHMIIFL6ADAgECAhADPtXtoGXRuMkd/PkqbJvYMA0G</span>
+<a name="l276"><span class="ln">276  </span></a><span class="s0"># CSqGSIb3DQEBCwUAMHIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdpQ2VydCBJ</span>
+<a name="l277"><span class="ln">277  </span></a><span class="s0"># bmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xMTAvBgNVBAMTKERpZ2lDZXJ0</span>
+<a name="l278"><span class="ln">278  </span></a><span class="s0"># IFNIQTIgQXNzdXJlZCBJRCBDb2RlIFNpZ25pbmcgQ0EwHhcNMTgxMjE4MDAwMDAw</span>
+<a name="l279"><span class="ln">279  </span></a><span class="s0"># WhcNMjExMjIyMTIwMDAwWjCBgzELMAkGA1UEBhMCVVMxFjAUBgNVBAgTDU5ldyBI</span>
+<a name="l280"><span class="ln">280  </span></a><span class="s0"># YW1wc2hpcmUxEjAQBgNVBAcTCVdvbGZlYm9ybzEjMCEGA1UEChMaUHl0aG9uIFNv</span>
+<a name="l281"><span class="ln">281  </span></a><span class="s0"># ZnR3YXJlIEZvdW5kYXRpb24xIzAhBgNVBAMTGlB5dGhvbiBTb2Z0d2FyZSBGb3Vu</span>
+<a name="l282"><span class="ln">282  </span></a><span class="s0"># ZGF0aW9uMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAqr2kS7J1uW7o</span>
+<a name="l283"><span class="ln">283  </span></a><span class="s0"># JRxlsdrETAjKarfoH5TI8PWST6Yb2xPooP7vHT4iaVXyL5Lze1f53Jw67Sp+u524</span>
+<a name="l284"><span class="ln">284  </span></a><span class="s0"># fJXf30qHViEWxumy2RWG0nciU2d+mMqzjlaAWSZNF0u4RcvyDJokEV0RUOqI5CG5</span>
+<a name="l285"><span class="ln">285  </span></a><span class="s0"># zPI3W9uQ6LiUk3HCYW6kpH177A5T3pw/Po8O8KErJGn1anaqtIICq99ySxrMad/2</span>
+<a name="l286"><span class="ln">286  </span></a><span class="s0"># hPMBRf6Ndah7f7HPn1gkSSTAoejyuqF5h+B0qI4+JK5+VLvz659VTbAWJsYakkxZ</span>
+<a name="l287"><span class="ln">287  </span></a><span class="s0"># xVWYpFv4KeQSSwoo0DzMvmERsTzNvVBMWhu9OriJNg+QfFmf96zVTu93cZ+r7xMp</span>
+<a name="l288"><span class="ln">288  </span></a><span class="s0"># bXyfIOGKhHMaRuZ8ihuWIx3gI9WHDFX6fBKR8+HlhdkaiBEWIsXRoy+EQUyK7zUs</span>
+<a name="l289"><span class="ln">289  </span></a><span class="s0"># +FqOo2sRYttbs8MTF9YDKFZwyPjn9Wn+gLGd5NUEVyNvD9QVGBEtN7vx87bduJUB</span>
+<a name="l290"><span class="ln">290  </span></a><span class="s0"># 8F4DylEsMtZTfjw/au6AmOnmneK5UcqSJuwRyZaGNk7y3qj06utx+HTTqHgi975U</span>
+<a name="l291"><span class="ln">291  </span></a><span class="s0"># pxfyrwAqkovoZEWBVSpvku8PVhkBXcLmNe6MEHlFiaMoiADAeKmX5RFRkN+VrmYG</span>
+<a name="l292"><span class="ln">292  </span></a><span class="s0"># Tg4zajxfdHeIY8TvLf48tTfmnQJd98geJQv/01NUy/FxuwqAuTkaez5Nl1LxP0Cp</span>
+<a name="l293"><span class="ln">293  </span></a><span class="s0"># THhghzO4FRD4itT2wqTh4jpojw9QZnsCAwEAAaOCAcUwggHBMB8GA1UdIwQYMBaA</span>
+<a name="l294"><span class="ln">294  </span></a><span class="s0"># FFrEuXsqCqOl6nEDwGD5LfZldQ5YMB0GA1UdDgQWBBT8Kr9+1L6s84KcpM97IgE7</span>
+<a name="l295"><span class="ln">295  </span></a><span class="s0"># uI8H8jAOBgNVHQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwdwYDVR0f</span>
+<a name="l296"><span class="ln">296  </span></a><span class="s0"># BHAwbjA1oDOgMYYvaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL3NoYTItYXNzdXJl</span>
+<a name="l297"><span class="ln">297  </span></a><span class="s0"># ZC1jcy1nMS5jcmwwNaAzoDGGL2h0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9zaGEy</span>
+<a name="l298"><span class="ln">298  </span></a><span class="s0"># LWFzc3VyZWQtY3MtZzEuY3JsMEwGA1UdIARFMEMwNwYJYIZIAYb9bAMBMCowKAYI</span>
+<a name="l299"><span class="ln">299  </span></a><span class="s0"># KwYBBQUHAgEWHGh0dHBzOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwCAYGZ4EMAQQB</span>
+<a name="l300"><span class="ln">300  </span></a><span class="s0"># MIGEBggrBgEFBQcBAQR4MHYwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2lj</span>
+<a name="l301"><span class="ln">301  </span></a><span class="s0"># ZXJ0LmNvbTBOBggrBgEFBQcwAoZCaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29t</span>
+<a name="l302"><span class="ln">302  </span></a><span class="s0"># L0RpZ2lDZXJ0U0hBMkFzc3VyZWRJRENvZGVTaWduaW5nQ0EuY3J0MAwGA1UdEwEB</span>
+<a name="l303"><span class="ln">303  </span></a><span class="s0"># /wQCMAAwDQYJKoZIhvcNAQELBQADggEBAEt1oS21X0axiafPjyY+vlYqjWKuUu/Y</span>
+<a name="l304"><span class="ln">304  </span></a><span class="s0"># FuYWIEq6iRRaFabNDhj9RBFQF/aJiE5msrQEOfAD6/6gVSH91lZWBqg6NEeG9T9S</span>
+<a name="l305"><span class="ln">305  </span></a><span class="s0"># XbiAPvJ9CEWFsdkXUrjbWhvCnuZ7kqUuU5BAumI1QRbpYgZL3UA+iZXkmjbGh1ln</span>
+<a name="l306"><span class="ln">306  </span></a><span class="s0"># 8rUhWIxbBYL4Sg2nqpB44p7CUFYkPj/MbwU2gvBV2pXjj5WaskoZtsACMv5g42BN</span>
+<a name="l307"><span class="ln">307  </span></a><span class="s0"># oVLoRAi+ev6s07POt+JtHRIm87lTyuc8wh0swTPUwksKbLU1Zdj9CpqtzXnuVE0w</span>
+<a name="l308"><span class="ln">308  </span></a><span class="s0"># 50exJvRSK3Vt4g+0vigpI3qPmDdpkf9+4Mvy0XMNcqrthw20R+PkIlMxghCVMIIQ</span>
+<a name="l309"><span class="ln">309  </span></a><span class="s0"># kQIBATCBhjByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkw</span>
+<a name="l310"><span class="ln">310  </span></a><span class="s0"># FwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEy</span>
+<a name="l311"><span class="ln">311  </span></a><span class="s0"># IEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhADPtXtoGXRuMkd/PkqbJvYMA0G</span>
+<a name="l312"><span class="ln">312  </span></a><span class="s0"># CWCGSAFlAwQCAQUAoIGYMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisG</span>
+<a name="l313"><span class="ln">313  </span></a><span class="s0"># AQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCwGCisGAQQBgjcCAQwxHjAcoBqAGABQ</span>
+<a name="l314"><span class="ln">314  </span></a><span class="s0"># AHkAdABoAG8AbgAgADMALgA5AC4AMjAvBgkqhkiG9w0BCQQxIgQgBrni4mcRv7sM</span>
+<a name="l315"><span class="ln">315  </span></a><span class="s0"># JHsxpROjRopOz2wuQVrJnn+lD7X7y+gwDQYJKoZIhvcNAQEBBQAEggIASnbIMwYa</span>
+<a name="l316"><span class="ln">316  </span></a><span class="s0"># Hp1Y5fnHk1qwPZSYMIcoXTqwryXMwSATPVOI8pk1B0CJnZogOzWoj+T9KIzNmYog</span>
+<a name="l317"><span class="ln">317  </span></a><span class="s0"># X8o4U7n2s4hcepUJAuLVrkExdVGB/ITokAlm6b/gKcNMuRYWqoK10xOag2BNXViA</span>
+<a name="l318"><span class="ln">318  </span></a><span class="s0"># jDTX8/4mTTyGzL07BZiWn8Tj1G+2kkiWW49z+SvbKBkWZkSmy412/85RSuZSVMrl</span>
+<a name="l319"><span class="ln">319  </span></a><span class="s0"># hz3oxBOaON6DrBBqaMsze+JffGAQU7cgvEFNY3yEyqOSrE5I1O/0kCCB5nq3pNji</span>
+<a name="l320"><span class="ln">320  </span></a><span class="s0"># v960++5qzV4K33oQmAJbT/E7cYxXorMZ4ydsd8G1EQ6JIhu44cNiFtNRQN1XNMlj</span>
+<a name="l321"><span class="ln">321  </span></a><span class="s0"># eRy1yq0w4ORjM6Q1MKs0BhcH2ljmZO2Zuh3brzqsbljPSKBEhB1htq+dYw6HHxE0</span>
+<a name="l322"><span class="ln">322  </span></a><span class="s0"># ++ddAQ236o3ev+sCS2raZdNLReJxbYU/nX/Xw1qMKuRdYROkpjRJQg/vHKufJHKs</span>
+<a name="l323"><span class="ln">323  </span></a><span class="s0"># r3Tm8KlGK/Lsg/gTOBcIXv5GSHrIEVI9emBuXHHbNYUI1Hmk0uE2MUiFTS7Ll32+</span>
+<a name="l324"><span class="ln">324  </span></a><span class="s0"># BbuxmjzoseMPWHH+YJpcwEx3vY8qMVKRYTLt9QP8dj+8wc03uoZJ2EHsiEeSoTTd</span>
+<a name="l325"><span class="ln">325  </span></a><span class="s0"># ypbhcvE2x7CR/kMnUuHx1V1FJP1zRm4ZGEwLNDHrTv1xgdnBDlYOrxriV/15jGHZ</span>
+<a name="l326"><span class="ln">326  </span></a><span class="s0"># 8k8SpI2AhEZRzRlFSkrWdDsuG8WfjFunOyGhgg1EMIINQAYKKwYBBAGCNwMDATGC</span>
+<a name="l327"><span class="ln">327  </span></a><span class="s0"># DTAwgg0sBgkqhkiG9w0BBwKggg0dMIINGQIBAzEPMA0GCWCGSAFlAwQCAQUAMHcG</span>
+<a name="l328"><span class="ln">328  </span></a><span class="s0"># CyqGSIb3DQEJEAEEoGgEZjBkAgEBBglghkgBhv1sBwEwMTANBglghkgBZQMEAgEF</span>
+<a name="l329"><span class="ln">329  </span></a><span class="s0"># AAQgKV6FCmvbMby3DlGQl3/NWtg5eCnN8rtNtyq3v9ZVu+wCEBqZEgzlgF/h1/Bu</span>
+<a name="l330"><span class="ln">330  </span></a><span class="s0"># 1zSAnykYDzIwMjEwMjE5MTQwNjUyWqCCCjcwggT+MIID5qADAgECAhANQkrgvjqI</span>
+<a name="l331"><span class="ln">331  </span></a><span class="s0"># /2BAIc4UAPDdMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNVBAYTAlVTMRUwEwYDVQQK</span>
+<a name="l332"><span class="ln">332  </span></a><span class="s0"># EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xMTAvBgNV</span>
+<a name="l333"><span class="ln">333  </span></a><span class="s0"># BAMTKERpZ2lDZXJ0IFNIQTIgQXNzdXJlZCBJRCBUaW1lc3RhbXBpbmcgQ0EwHhcN</span>
+<a name="l334"><span class="ln">334  </span></a><span class="s0"># MjEwMTAxMDAwMDAwWhcNMzEwMTA2MDAwMDAwWjBIMQswCQYDVQQGEwJVUzEXMBUG</span>
+<a name="l335"><span class="ln">335  </span></a><span class="s0"># A1UEChMORGlnaUNlcnQsIEluYy4xIDAeBgNVBAMTF0RpZ2lDZXJ0IFRpbWVzdGFt</span>
+<a name="l336"><span class="ln">336  </span></a><span class="s0"># cCAyMDIxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwuZhhGfFivUN</span>
+<a name="l337"><span class="ln">337  </span></a><span class="s0"># CKRFymNrUdc6EUK9CnV1TZS0DFC1JhD+HchvkWsMlucaXEjvROW/m2HNFZFiWrj/</span>
+<a name="l338"><span class="ln">338  </span></a><span class="s0"># ZwucY/02aoH6KfjdK3CF3gIY83htvH35x20JPb5qdofpir34hF0edsnkxnZ2OlPR</span>
+<a name="l339"><span class="ln">339  </span></a><span class="s0"># 0dNaNo/Go+EvGzq3YdZz7E5tM4p8XUUtS7FQ5kE6N1aG3JMjjfdQJehk5t3Tjy9X</span>
+<a name="l340"><span class="ln">340  </span></a><span class="s0"># tYcg6w6OLNUj2vRNeEbjA4MxKUpcDDGKSoyIxfcwWvkUrxVfbENJCf0mI1P2jWPo</span>
+<a name="l341"><span class="ln">341  </span></a><span class="s0"># GqtbsR0wwptpgrTb/FZUvB+hh6u+elsKIC9LCcmVp42y+tZji06lchzun3oBc/gZ</span>
+<a name="l342"><span class="ln">342  </span></a><span class="s0"># 1v4NSYS9AQIDAQABo4IBuDCCAbQwDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQC</span>
+<a name="l343"><span class="ln">343  </span></a><span class="s0"># MAAwFgYDVR0lAQH/BAwwCgYIKwYBBQUHAwgwQQYDVR0gBDowODA2BglghkgBhv1s</span>
+<a name="l344"><span class="ln">344  </span></a><span class="s0"># BwEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2VydC5jb20vQ1BTMB8G</span>
+<a name="l345"><span class="ln">345  </span></a><span class="s0"># A1UdIwQYMBaAFPS24SAd/imu0uRhpbKiJbLIFzVuMB0GA1UdDgQWBBQ2RIaOpLqw</span>
+<a name="l346"><span class="ln">346  </span></a><span class="s0"># Zr68KC0dRDbd42p6vDBxBgNVHR8EajBoMDKgMKAuhixodHRwOi8vY3JsMy5kaWdp</span>
+<a name="l347"><span class="ln">347  </span></a><span class="s0"># Y2VydC5jb20vc2hhMi1hc3N1cmVkLXRzLmNybDAyoDCgLoYsaHR0cDovL2NybDQu</span>
+<a name="l348"><span class="ln">348  </span></a><span class="s0"># ZGlnaWNlcnQuY29tL3NoYTItYXNzdXJlZC10cy5jcmwwgYUGCCsGAQUFBwEBBHkw</span>
+<a name="l349"><span class="ln">349  </span></a><span class="s0"># dzAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQuY29tME8GCCsGAQUF</span>
+<a name="l350"><span class="ln">350  </span></a><span class="s0"># BzAChkNodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20vRGlnaUNlcnRTSEEyQXNz</span>
+<a name="l351"><span class="ln">351  </span></a><span class="s0"># dXJlZElEVGltZXN0YW1waW5nQ0EuY3J0MA0GCSqGSIb3DQEBCwUAA4IBAQBIHNy1</span>
+<a name="l352"><span class="ln">352  </span></a><span class="s0"># 6ZojvOca5yAOjmdG/UJyUXQKI0ejq5LSJcRwWb4UoOUngaVNFBUZB3nw0QTDhtk7</span>
+<a name="l353"><span class="ln">353  </span></a><span class="s0"># vf5EAmZN7WmkD/a4cM9i6PVRSnh5Nnont/PnUp+Tp+1DnnvntN1BIon7h6JGA078</span>
+<a name="l354"><span class="ln">354  </span></a><span class="s0"># 9P63ZHdjXyNSaYOC+hpT7ZDMjaEXcw3082U5cEvznNZ6e9oMvD0y0BvL9WH8dQgA</span>
+<a name="l355"><span class="ln">355  </span></a><span class="s0"># dryBDvjA4VzPxBFy5xtkSdgimnUVQvUtMjiB2vRgorq0Uvtc4GEkJU+y38kpqHND</span>
+<a name="l356"><span class="ln">356  </span></a><span class="s0"># Udq9Y9YfW5v3LhtPEx33Sg1xfpe39D+E68Hjo0mh+s6nv1bPull2YYlffqe0jmd4</span>
+<a name="l357"><span class="ln">357  </span></a><span class="s0"># +TaY4cso2luHpoovMIIFMTCCBBmgAwIBAgIQCqEl1tYyG35B5AXaNpfCFTANBgkq</span>
+<a name="l358"><span class="ln">358  </span></a><span class="s0"># hkiG9w0BAQsFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5j</span>
+<a name="l359"><span class="ln">359  </span></a><span class="s0"># MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBB</span>
+<a name="l360"><span class="ln">360  </span></a><span class="s0"># c3N1cmVkIElEIFJvb3QgQ0EwHhcNMTYwMTA3MTIwMDAwWhcNMzEwMTA3MTIwMDAw</span>
+<a name="l361"><span class="ln">361  </span></a><span class="s0"># WjByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQL</span>
+<a name="l362"><span class="ln">362  </span></a><span class="s0"># ExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFzc3Vy</span>
+<a name="l363"><span class="ln">363  </span></a><span class="s0"># ZWQgSUQgVGltZXN0YW1waW5nIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB</span>
+<a name="l364"><span class="ln">364  </span></a><span class="s0"># CgKCAQEAvdAy7kvNj3/dqbqCmcU5VChXtiNKxA4HRTNREH3Q+X1NaH7ntqD0jbOI</span>
+<a name="l365"><span class="ln">365  </span></a><span class="s0"># 5Je/YyGQmL8TvFfTw+F+CNZqFAA49y4eO+7MpvYyWf5fZT/gm+vjRkcGGlV+Cyd+</span>
+<a name="l366"><span class="ln">366  </span></a><span class="s0"># wKL1oODeIj8O/36V+/OjuiI+GKwR5PCZA207hXwJ0+5dyJoLVOOoCXFr4M8iEA91</span>
+<a name="l367"><span class="ln">367  </span></a><span class="s0"># z3FyTgqt30A6XLdR4aF5FMZNJCMwXbzsPGBqrC8HzP3w6kfZiFBe/WZuVmEnKYmE</span>
+<a name="l368"><span class="ln">368  </span></a><span class="s0"># UeaC50ZQ/ZQqLKfkdT66mA+Ef58xFNat1fJky3seBdCEGXIX8RcG7z3N1k3vBkL9</span>
+<a name="l369"><span class="ln">369  </span></a><span class="s0"># olMqT4UdxB08r8/arBD13ays6Vb/kwIDAQABo4IBzjCCAcowHQYDVR0OBBYEFPS2</span>
+<a name="l370"><span class="ln">370  </span></a><span class="s0"># 4SAd/imu0uRhpbKiJbLIFzVuMB8GA1UdIwQYMBaAFEXroq/0ksuCMS1Ri6enIZ3z</span>
+<a name="l371"><span class="ln">371  </span></a><span class="s0"># bcgPMBIGA1UdEwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQDAgGGMBMGA1UdJQQM</span>
+<a name="l372"><span class="ln">372  </span></a><span class="s0"># MAoGCCsGAQUFBwMIMHkGCCsGAQUFBwEBBG0wazAkBggrBgEFBQcwAYYYaHR0cDov</span>
+<a name="l373"><span class="ln">373  </span></a><span class="s0"># L29jc3AuZGlnaWNlcnQuY29tMEMGCCsGAQUFBzAChjdodHRwOi8vY2FjZXJ0cy5k</span>
+<a name="l374"><span class="ln">374  </span></a><span class="s0"># aWdpY2VydC5jb20vRGlnaUNlcnRBc3N1cmVkSURSb290Q0EuY3J0MIGBBgNVHR8E</span>
+<a name="l375"><span class="ln">375  </span></a><span class="s0"># ejB4MDqgOKA2hjRodHRwOi8vY3JsNC5kaWdpY2VydC5jb20vRGlnaUNlcnRBc3N1</span>
+<a name="l376"><span class="ln">376  </span></a><span class="s0"># cmVkSURSb290Q0EuY3JsMDqgOKA2hjRodHRwOi8vY3JsMy5kaWdpY2VydC5jb20v</span>
+<a name="l377"><span class="ln">377  </span></a><span class="s0"># RGlnaUNlcnRBc3N1cmVkSURSb290Q0EuY3JsMFAGA1UdIARJMEcwOAYKYIZIAYb9</span>
+<a name="l378"><span class="ln">378  </span></a><span class="s0"># bAACBDAqMCgGCCsGAQUFBwIBFhxodHRwczovL3d3dy5kaWdpY2VydC5jb20vQ1BT</span>
+<a name="l379"><span class="ln">379  </span></a><span class="s0"># MAsGCWCGSAGG/WwHATANBgkqhkiG9w0BAQsFAAOCAQEAcZUS6VGHVmnN793afKpj</span>
+<a name="l380"><span class="ln">380  </span></a><span class="s0"># erN4zwY3QITvS4S/ys8DAv3Fp8MOIEIsr3fzKx8MIVoqtwU0HWqumfgnoma/Capg</span>
+<a name="l381"><span class="ln">381  </span></a><span class="s0"># 33akOpMP+LLR2HwZYuhegiUexLoceywh4tZbLBQ1QwRostt1AuByx5jWPGTlH0gQ</span>
+<a name="l382"><span class="ln">382  </span></a><span class="s0"># GF+JOGFNYkYkh2OMkVIsrymJ5Xgf1gsUpYDXEkdws3XVk4WTfraSZ/tTYYmo9WuW</span>
+<a name="l383"><span class="ln">383  </span></a><span class="s0"># wPRYaQ18yAGxuSh1t5ljhSKMYcp5lH5Z/IwP42+1ASa2bKXuh1Eh5Fhgm7oMLStt</span>
+<a name="l384"><span class="ln">384  </span></a><span class="s0"># osR+u8QlK0cCCHxJrhO24XxCQijGGFbPQTS2Zl22dHv1VjMiLyI2skuiSpXY9aaO</span>
+<a name="l385"><span class="ln">385  </span></a><span class="s0"># UjGCAk0wggJJAgEBMIGGMHIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdpQ2Vy</span>
+<a name="l386"><span class="ln">386  </span></a><span class="s0"># dCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xMTAvBgNVBAMTKERpZ2lD</span>
+<a name="l387"><span class="ln">387  </span></a><span class="s0"># ZXJ0IFNIQTIgQXNzdXJlZCBJRCBUaW1lc3RhbXBpbmcgQ0ECEA1CSuC+Ooj/YEAh</span>
+<a name="l388"><span class="ln">388  </span></a><span class="s0"># zhQA8N0wDQYJYIZIAWUDBAIBBQCggZgwGgYJKoZIhvcNAQkDMQ0GCyqGSIb3DQEJ</span>
+<a name="l389"><span class="ln">389  </span></a><span class="s0"># EAEEMBwGCSqGSIb3DQEJBTEPFw0yMTAyMTkxNDA2NTJaMCsGCyqGSIb3DQEJEAIM</span>
+<a name="l390"><span class="ln">390  </span></a><span class="s0"># MRwwGjAYMBYEFOHXgqjhkb7va8oWkbWqtJSmJJvzMC8GCSqGSIb3DQEJBDEiBCBA</span>
+<a name="l391"><span class="ln">391  </span></a><span class="s0"># 89eYl8pAM064767am1Hbmt74ateb5uXsNRKkTeFrtzANBgkqhkiG9w0BAQEFAASC</span>
+<a name="l392"><span class="ln">392  </span></a><span class="s0"># AQBtq0HdYxFjfNEY6WAzFfaGPrthXn6D+UROraaJkj5NEcNXEZNOXm0OE2CFqtl9</span>
+<a name="l393"><span class="ln">393  </span></a><span class="s0"># 8VkPEdMV5u57i4lMA77lWalPN4F70g7fjEaKVgnUZs6IC8W5500JlZWP7GEly+7L</span>
+<a name="l394"><span class="ln">394  </span></a><span class="s0"># WnoayBdYzogiq2c379NqJjOYe5YSPqYZPyumV84Ftd4QuVVh/yY6QMr3u2RWkf+U</span>
+<a name="l395"><span class="ln">395  </span></a><span class="s0"># 2d3cXcL/u7M1PGAM1kKTlUr78hKFHvhPabMA2o7TytBg9fb2tci3hyS1Jfc05P2X</span>
+<a name="l396"><span class="ln">396  </span></a><span class="s0"># xI4TkughPeMWdKLW0IHE9Dwr0odZKZwTTqUiheEXGLJ1hwSTHfckJ6zCFzM64kwa</span>
+<a name="l397"><span class="ln">397  </span></a><span class="s0"># 9XZwoBVjtYG8G11yMisVRidF</span>
+<a name="l398"><span class="ln">398  </span></a><span class="s0"># SIG # End signature block</span>
+<a name="l399"><span class="ln">399  </span></a></pre>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>macosx.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #d55fde; font-style: italic;}
+.s1 { color: #bbbbbb;}
+.s2 { color: #89ca78;}
+.s3 { color: #5c6370; font-style: italic;}
+.s4 { color: #d19a66;}
+.ln { color: #495162; font-weight: normal; font-style: normal; }
+</style>
+</head>
+<body bgcolor="#282c34">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+macosx.py</font>
+</center></td></tr></table>
+<pre><a name="l1"><span class="ln">1    </span></a><span class="s0">import </span><span class="s1">platform</span>
+<a name="l2"><span class="ln">2    </span></a><span class="s0">import </span><span class="s1">os</span>
+<a name="l3"><span class="ln">3    </span></a><span class="s0">import </span><span class="s1">sys</span>
+<a name="l4"><span class="ln">4    </span></a><span class="s0">from </span><span class="s1">pygame.pkgdata </span><span class="s0">import </span><span class="s1">getResource</span>
+<a name="l5"><span class="ln">5    </span></a><span class="s0">from </span><span class="s1">pygame </span><span class="s0">import </span><span class="s1">sdlmain_osx</span>
+<a name="l6"><span class="ln">6    </span></a>
+<a name="l7"><span class="ln">7    </span></a><span class="s1">__all__ = [</span><span class="s2">'Video_AutoInit'</span><span class="s1">]</span>
+<a name="l8"><span class="ln">8    </span></a>
+<a name="l9"><span class="ln">9    </span></a><span class="s0">def </span><span class="s1">Video_AutoInit():</span>
+<a name="l10"><span class="ln">10   </span></a>    <span class="s3">&quot;&quot;&quot;Called from the base.c just before display module is initialized.&quot;&quot;&quot;</span>
+<a name="l11"><span class="ln">11   </span></a>    <span class="s0">if </span><span class="s2">'Darwin' </span><span class="s0">in </span><span class="s1">platform.platform():</span>
+<a name="l12"><span class="ln">12   </span></a>        <span class="s0">if not </span><span class="s1">sdlmain_osx.RunningFromBundleWithNSApplication():</span>
+<a name="l13"><span class="ln">13   </span></a>            <span class="s1">default_icon_data = </span><span class="s0">None</span>
+<a name="l14"><span class="ln">14   </span></a>            <span class="s0">try</span><span class="s1">:</span>
+<a name="l15"><span class="ln">15   </span></a>                <span class="s0">with </span><span class="s1">getResource(</span><span class="s2">'pygame_icon.tiff'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">file_resource:</span>
+<a name="l16"><span class="ln">16   </span></a>                    <span class="s1">default_icon_data = file_resource.read()</span>
+<a name="l17"><span class="ln">17   </span></a>            <span class="s0">except </span><span class="s1">(IOError, NotImplementedError):</span>
+<a name="l18"><span class="ln">18   </span></a>                <span class="s0">pass</span>
+<a name="l19"><span class="ln">19   </span></a>            <span class="s1">sdlmain_osx.InstallNSApplication(default_icon_data)</span>
+<a name="l20"><span class="ln">20   </span></a>        <span class="s0">if </span><span class="s1">(os.getcwd() == </span><span class="s2">'/'</span><span class="s1">) </span><span class="s0">and </span><span class="s1">len(sys.argv) &gt; </span><span class="s4">1</span><span class="s1">:</span>
+<a name="l21"><span class="ln">21   </span></a>            <span class="s1">os.chdir(os.path.dirname(sys.argv[</span><span class="s4">0</span><span class="s1">]))</span>
+<a name="l22"><span class="ln">22   </span></a>    <span class="s0">return True</span>
+<a name="l23"><span class="ln">23   </span></a></pre>
+</body>
+</html>

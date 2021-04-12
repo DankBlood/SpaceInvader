@@ -1,0 +1,52 @@
+<html>
+<head>
+<title>_dummybackend.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #5c6370; font-style: italic;}
+.s1 { color: #bbbbbb;}
+.s2 { color: #d55fde; font-style: italic;}
+.s3 { color: #d19a66;}
+.s4 { color: #89ca78;}
+.ln { color: #495162; font-weight: normal; font-style: normal; }
+</style>
+</head>
+<body bgcolor="#282c34">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+_dummybackend.py</font>
+</center></td></tr></table>
+<pre><a name="l1"><span class="ln">1    </span></a><span class="s0">&quot;&quot;&quot;dummy Movie class if all else fails &quot;&quot;&quot;</span>
+<a name="l2"><span class="ln">2    </span></a><span class="s2">class </span><span class="s1">Movie:</span>
+<a name="l3"><span class="ln">3    </span></a>    <span class="s2">def </span><span class="s1">__init__(self, filename, surface=</span><span class="s2">None</span><span class="s1">):</span>
+<a name="l4"><span class="ln">4    </span></a>        <span class="s1">self.filename = filename</span>
+<a name="l5"><span class="ln">5    </span></a>        <span class="s1">self.surface = surface</span>
+<a name="l6"><span class="ln">6    </span></a>        <span class="s1">self.process = </span><span class="s2">None</span>
+<a name="l7"><span class="ln">7    </span></a>        <span class="s1">self.loops = </span><span class="s3">0</span>
+<a name="l8"><span class="ln">8    </span></a>        <span class="s1">self.playing = </span><span class="s2">False</span>
+<a name="l9"><span class="ln">9    </span></a>        <span class="s1">self.paused = </span><span class="s2">False</span>
+<a name="l10"><span class="ln">10   </span></a>        <span class="s1">self._backend = </span><span class="s4">&quot;DUMMY&quot;</span>
+<a name="l11"><span class="ln">11   </span></a>        <span class="s1">self.width = </span><span class="s3">0</span>
+<a name="l12"><span class="ln">12   </span></a>        <span class="s1">self.height = </span><span class="s3">0</span>
+<a name="l13"><span class="ln">13   </span></a>        <span class="s1">self.finished = </span><span class="s3">1</span>
+<a name="l14"><span class="ln">14   </span></a>
+<a name="l15"><span class="ln">15   </span></a>    <span class="s2">def </span><span class="s1">play(self, loops=</span><span class="s3">0</span><span class="s1">):</span>
+<a name="l16"><span class="ln">16   </span></a>        <span class="s1">self.playing = </span><span class="s2">not </span><span class="s1">self.playing</span>
+<a name="l17"><span class="ln">17   </span></a>
+<a name="l18"><span class="ln">18   </span></a>    <span class="s2">def </span><span class="s1">stop(self):</span>
+<a name="l19"><span class="ln">19   </span></a>        <span class="s1">self.playing = </span><span class="s2">not </span><span class="s1">self.playing</span>
+<a name="l20"><span class="ln">20   </span></a>        <span class="s1">self.paused = </span><span class="s2">not </span><span class="s1">self.paused</span>
+<a name="l21"><span class="ln">21   </span></a>
+<a name="l22"><span class="ln">22   </span></a>    <span class="s2">def </span><span class="s1">pause(self):</span>
+<a name="l23"><span class="ln">23   </span></a>        <span class="s1">self.paused = </span><span class="s2">not </span><span class="s1">self.paused</span>
+<a name="l24"><span class="ln">24   </span></a>
+<a name="l25"><span class="ln">25   </span></a>    <span class="s2">def </span><span class="s1">resize(self, w, h):</span>
+<a name="l26"><span class="ln">26   </span></a>        <span class="s1">self.width = w</span>
+<a name="l27"><span class="ln">27   </span></a>        <span class="s1">self.height = h</span>
+<a name="l28"><span class="ln">28   </span></a>
+<a name="l29"><span class="ln">29   </span></a>    <span class="s2">def </span><span class="s1">__repr__(self):</span>
+<a name="l30"><span class="ln">30   </span></a>        <span class="s2">return </span><span class="s4">&quot;(%s 0.0s)&quot; </span><span class="s1">% self.filename</span>
+<a name="l31"><span class="ln">31   </span></a></pre>
+</body>
+</html>
