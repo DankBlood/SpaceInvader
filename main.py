@@ -1,4 +1,5 @@
 import pygame
+from pygame import mixer
 import random
 import math
 
@@ -16,9 +17,20 @@ pygame.display.set_icon(game_Icon)  # calls the icon
 # Background
 background = pygame.image.load("background.png")
 
+# initializes the shooting sound effect
+
+shoot_sound = pygame.mixer.Sound("laser-gun.wav")
+shoot_sound.set_volume(0.3)
+
 
 # creating the start menu
 def start():
+
+    # initializes the background music which restarts everytime the player goes to the start menu (retries the game)
+    mixer.music.load("Intergalactic Odyssey.ogg")
+    mixer.music.set_volume(0.08)
+    mixer.music.play(-1)
+
     on = True
     # global variable for the alien's movement speed
     global alien_speed
@@ -61,7 +73,7 @@ def start():
         # This for loop detects if the user presses e,m, or h. These inputs determine the difficulty and the alien movement speed. The higher the difficulty, the greater the speed of the alien
         # Once a valid input is pressed, the main function will begin
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: # if the x on the top right is clicked, close the app
+            if event.type == pygame.QUIT:  # if the x on the top right is clicked, close the app
                 pygame.quit()
             if event.type == pygame.KEYDOWN:
 
@@ -156,7 +168,7 @@ def main():
     # function for the score
     def show_score(x, y):
         score = font.render("Score " + str(score_value), True, (
-        255, 255, 255))  # renders the font and prints the score, make the font white using RGB values
+            255, 255, 255))  # renders the font and prints the score, make the font white using RGB values
         screen.blit(score, (x, y))  # draws out the function using blit
 
     # boss HP
@@ -170,12 +182,13 @@ def main():
         global bullet_state
         bullet_state = "fire"
         screen.blit(bullet_image, (
-        x + 16, y - 10))  # bullet is initially drawn from the center and a bit above the spaceship when fired
+            x + 16, y - 10))  # bullet is initially drawn from the center and a bit above the spaceship when fired
+
 
     # creating bullet collision using the distance formula (sqrt (x2-x1)^2 + (y2-y1)^2)
     def bullet_collision(alienX, alienY, bulletX, bulletY):
         distance = math.sqrt(math.pow(alienX - bulletX, 2) + math.pow(alienY - bulletY, 2))
-        if distance < 18:  # bullet is in contact with the alien
+        if distance < 17:  # bullet is in contact with the alien
             return True
         else:
             return False
@@ -215,8 +228,6 @@ def main():
 
     # Game Loop
     while running:
-        # Uses RGB to create the background colour of the game
-        screen.fill((52, 1, 59))
         # draws the background, coordinates must be 0,0 to cover the whole screen
         screen.blit(background, (0, 0))
         # in the for loop, it looks for each event that is occurring.
@@ -236,11 +247,10 @@ def main():
 
                     # calls the bullet function if the space bar is pressed
                 if event.key == pygame.K_SPACE:
-                    if bullet_state == "loaded":  # without this if statement, the bullet changes position is space is pressed before the bullet is either off screen or in contact with an alien
+                    if bullet_state == "loaded":  # without this if statement, the bullet changes position if space is pressed before the bullet is either off screen or in contact with an alien which shouldn't happen
                         bulletX = playerX  # BulletX equals to the spaceship's current X position.
-                        bullet(bulletX,
-                               bulletY)  # Otherwise if the parameter was playerX, the bullet would follow the player's position after being shot rather than going straight up
-
+                        bullet(bulletX, bulletY)  # Otherwise if the parameter was playerX, the bullet would follow the player's position after being shot rather than going straight up
+                        shoot_sound.play()  # play the shoot sound effect
             # If the key is released, stop moving the ship
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or player_image == 0 or player_image == 1200:
@@ -264,8 +274,8 @@ def main():
                 break  # allows for the user to break the while loop if the x on the top-right of the screen is pressed (close the game)
 
             alienX[i] += alienX_change[i]  # movement for the aliens on the x axis (redraws the aliens)
-            if alienX[i] <= 5:  # if an alien hit the edge of the screen on the left side
-                alienX[i] = 5  # make sure they do not go off screen
+            if alienX[i] <= 8:  # if an alien hit the edge of the screen on the left side
+                alienX[i] = 8  # make sure they do not go off screen
                 alienY[i] += alienY_change[
                     i]  # alien's current Y position is added to this variable (alien moves down the screen)
                 alienX_change[
@@ -279,7 +289,7 @@ def main():
             collision = bullet_collision(alienX[i], alienY[i], bulletX,
                                          bulletY)  # collision is the state of if a bullet collides with an alien using this function (defined above)
             if collision:  # if collision is true
-                bulletY = 700 # bullet returns to it's original Y position
+                bulletY = 700  # bullet returns to it's original Y position
                 bullet_state = "loaded"  # bullet returns to ship and is "loaded
                 score_value += 1  # score increases by 1
 
